@@ -20,7 +20,7 @@ Pour modifier l'état d'une case à cocher :
  - Via la touche espace, la fenêtre de choix ne se ferme pas.
  - Via la touche entrée, la fenêtre de choix se ferme.
 
-Un clic droit (que se soit sur le **QLIneEdit**, le **QComboBox* ou le **QStandardItemModel**) ouvre un context menu permettant :
+Un clic droit (que se soit sur le **QLIneEdit**, le **QComboBox** ou le **QStandardItemModel**) ouvre un context menu permettant :
  - De copier le texte de la **QLineEdit**.
  - D'annuler une action.
  - De refaire une action.
@@ -99,3 +99,104 @@ Les arguments possibles sont les suivants :
  - **currentText** : Retourne les textes des éléments sélectionnés.
  - **currentData** : Retourne les data des éléments sélectionnés.
 
+*** ***
+
+## English version :
+
+### Presentation:
+![02](https://user-images.githubusercontent.com/48289933/138742737-32b985d0-f9fd-4d9f-90fa-2a6f807e536b.png)
+
+
+**QCheckComboBox** is a custom widget for **PySide6** (or PyQt6) or PySide2 (PyQt5).
+
+This widget is a **QComboBox** displaying a list of items with checkboxes.
+
+The goal is to propose a small widget displaying possibly a long list of proposals.
+
+Each (partially) checked box is displayed in the **QLineEdit**.
+
+### Usage:
+
+To change the state of a checkbox:
+ - Via a mouse click, the choice window does not close.
+ - By pressing the space key, the selection window does not close.
+ - By pressing the enter key, the selection window closes.
+
+A right click (whether on the **QLIneEdit**, the **QComboBox** or the **QStandardItemModel**) opens a context menu allowing you to:
+ - Copy text from the **QLineEdit**.
+ - Undo an action.
+ - Redo an action.
+ - To check all the checkboxes.
+ - Partially check all checkboxes if **TristateMode** is active.
+ - Uncheck all checkboxes.
+ - Restore default values (if **setDefaultValues** has been used).
+Each action has a keyboard shortcut that can be called from the **QLineEdit** and the **QStandardItemModel**.
+
+To display the list of items:
+ - A click on the **QLineEdit**.
+ - A click on the **QComboBox**.
+ - Using the DOWN arrow, the space bar, the tab key or the enter key when the widget has the focus.
+
+The UP and DOWN arrows allow you to navigate in the **QStandardItemModel** without any problem when the **QComboBox** has the focus.
+
+It seems that using the icons crashes with QT5.
+
+### Initialization:
+As usual, just call the class: **NewWidget = QCheckComboBox()**.
+
+The possible arguments are the following:
+ - **TristateMode** : Execute the **setTristateMode** function with the indicated bool.
+ - **CopyIcon**: Execute the **setIcons** function for this icon with the indicated str / QIcon.
+ - **UndoIcon** : Executes the **setIcons** function for this icon with the indicated str / QIcon.
+ - **RedoIcon** : Executes the **setIcons** function for this icon with the specified str / QIcon.
+ - **AllCheckIcon** : Executes the **setIcons** function for this icon with the specified str / QIcon.
+ - **AllUncheckIcon** : Executes the **setIcons** function for this icon with the specified str / QIcon.
+ - **AllPatriallyCheckIcon** : Executes the **setIcons** function for this icon with the specified str / QIcon.
+ - **DefaultValuesIcon** : Executes the **setIcons** function for this icon with the indicated str / QIcon.
+ - **Title** + **TitleIcon** : Executes the **setTtitle** function with the indicated title (str) and the icon (str / QIcon) if indicated.
+ - **Items**: Executes the **addItems** function with the list of key dictionaries data, text, state, icon indicated.
+ - **DefaultValuesCase** : To be coupled with **DefaultValues** in order to define if the search for items is case sensitive with the indicated bool.
+ - **DefaultValues**: Executes the **setDefaultValues** function with the indicated dictionary, it must be as follows:
+   - Case status: [items searched].
+     - Case state: Qt.Checked / Qt.PartiallyChecked
+     - List of searched elements: 
+       - If it is an integer (int), search for the index (which will add +1 if there is a title).
+       - If it's a text (str), search in the data and text of the elements.
+
+### Functions :
+ - **setIcons** : Change icons of context menu actions (use default icons).
+   - Accepted arguments (str) : Copy, Undo, Redo, AllCheck, AllUncheck, AllPatriallyCheck, DefaultValues.
+   - Accepted values (str / QIcon).
+ - **setTristateMode** : Enable tristate mode (false by default).
+   - Status of the mode (bool).
+ - **updateLang**: Update contextual menu (language and icons), must be called if a translation of texts is applied.
+ - **addItem**: Add an item in the **QStandardItemModel**.
+   - Text (str) of the item: **mandatory**.
+   - Data (str) of the element : allows to use a text invisible to the user (if empty, use the text).
+   - Status of the box (Qt.Checked / Qt.PartiallyChecked).
+   - Icon of the item (str / QIcon).
+ - **AddItems** : Add items in the **QStandardItemModel**.
+   - Items : List of dictionaries containing the keys : data, text, state, icon.
+ - **setStateItems** : Use a checkbox state for the given items.
+   - Checkbox state (Qt.Checked / Qt.PartiallyChecked / Qt.Unchecked).
+   - List of searched elements: 
+     - If it is an integer (int), search for the index (which will add +1 if there is a title).
+     - If it is a text (str), search in the data and the texts of the elements.
+   - Case sensitive (bool) (false by default).
+ - **setStateAll** : Use a checkbox state for all elements.
+   - Checkbox state (Qt.Checked / Qt.PartiallyChecked / Qt.Unchecked).
+ - **setTitle**: Insert a non-clickable element at the beginning of the **QStandardItemModel**.
+   - Title (str).
+   - Icon (str or QIcon).
+ - **SetDefaultValues**: Set default values for reset.
+   - Case status (Qt.Checked / Qt.PartiallyChecked).
+   - List of searched elements: 
+     - If it is an integer (int), search for the index (which will add +1 if there is a title).
+     - If it is a text (str), search in the data and the texts of the elements.
+   - Case sensitive (bool) (false by default).
+ - **resetDefaultValues** : Reset all checkboxes to default values.
+ - **SetReUndoAction**: Undo or reset an action.
+   - Action (str) : Undo / Redo.
+ - **CopyText** : Copy the text from the QLineEdit to the clipboard.
+ - **currentText** : Returns the texts of the selected elements.
+ - **currentData** : Returns the data of the selected elements.

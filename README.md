@@ -1,6 +1,7 @@
 # QCheckComboBox
 
 ## Version Française :
+Basé sur : https://gis.stackexchange.com/questions/350148/qcombobox-multiple-selection-pyqt5
 
 ### Présentation :
 ![01](https://user-images.githubusercontent.com/48289933/138738623-fee58278-7c69-42d5-99da-05d0a62a11a0.png)
@@ -102,6 +103,7 @@ Les arguments possibles sont les suivants :
 *** ***
 
 ## English version :
+Based on : https://gis.stackexchange.com/questions/350148/qcombobox-multiple-selection-pyqt5
 
 ### Presentation:
 ![02](https://user-images.githubusercontent.com/48289933/138742737-32b985d0-f9fd-4d9f-90fa-2a6f807e536b.png)

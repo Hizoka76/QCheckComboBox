@@ -2,7 +2,7 @@
 
 # Basé sur : https://gis.stackexchange.com/questions/350148/qcombobox-multiple-selection-pyqt5
 
-# Version: 21-10-25.2
+# Version: 21-10-26.0
 
 # Old :
     # Mise à jour du texte du lineEdit lors d'un changement d'état d'une case à cochée
@@ -38,24 +38,35 @@ try:
     PySideVersion = 6
 
 except:
-    PySideVersion = 2
-
     try:
-        # Modules PySide2
-        from PySide2.QtGui import QPalette, QFontMetrics, QStandardItem, QIcon, QCursor, QKeySequence
-        from PySide2.QtWidgets import QComboBox, QStyledItemDelegate, QLineEdit, QListView, QMenu, QApplication, QAction
-        from PySide2.QtCore import QEvent, Qt, QCoreApplication, QSize, QFileInfo, QMimeDatabase, QMimeType
+        # Modules PyQt6
+        from PyQt6.QtGui import QPalette, QFontMetrics, QStandardItem, QAction, QIcon, QCursor, QKeySequence
+        from PyQt6.QtWidgets import QComboBox, QStyledItemDelegate, QLineEdit, QListView, QMenu, QApplication
+        from PyQt6.QtCore import QEvent, Qt, QCoreApplication, QSize, QFileInfo, QMimeDatabase, QMimeType
+
+        PySideVersion = 6
 
     except:
-        try:
-            # Modules PyQt5
-            from PyQt5.QtGui import QPalette, QFontMetrics, QStandardItem, QIcon, QCursor, QKeySequence
-            from PyQt5.QtWidgets import QComboBox, QStyledItemDelegate, QLineEdit, QListView, QMenu, QApplication, QAction
-            from PyQt5.QtCore import QEvent, Qt, QCoreApplication, QSize, QFileInfo, QMimeDatabase, QMimeType
 
         except:
-            print("QCheckComboBox : Impossible de trouver PySide6 / PySide2 / PyQt5.")
-            exit()
+            PySideVersion = 2
+
+            try:
+                # Modules PySide2
+                from PySide2.QtGui import QPalette, QFontMetrics, QStandardItem, QIcon, QCursor, QKeySequence
+                from PySide2.QtWidgets import QComboBox, QStyledItemDelegate, QLineEdit, QListView, QMenu, QApplication, QAction
+                from PySide2.QtCore import QEvent, Qt, QCoreApplication, QSize, QFileInfo, QMimeDatabase, QMimeType
+
+            except:
+                try:
+                    # Modules PyQt5
+                    from PyQt5.QtGui import QPalette, QFontMetrics, QStandardItem, QIcon, QCursor, QKeySequence
+                    from PyQt5.QtWidgets import QComboBox, QStyledItemDelegate, QLineEdit, QListView, QMenu, QApplication, QAction
+                    from PyQt5.QtCore import QEvent, Qt, QCoreApplication, QSize, QFileInfo, QMimeDatabase, QMimeType
+
+                except:
+                    print("QCheckComboBox : Impossible de trouver PySide6 / PySide2 / PyQt5.")
+                    exit()
 
 
 
@@ -587,8 +598,7 @@ class QCheckComboBox(QComboBox):
 
         item.setData(data, Qt.UserRole)
 
-        # Si utilisation d'une icône valide, plante avec PySide2 et PyQt5
-        if PySideVersion == 6 and icon is not None and not icon.isNull():
+        if icon is not None and not icon.isNull():
             item.setIcon(icon)
 
         # Si l'état de la case à cocher est précisée

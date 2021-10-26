@@ -2,7 +2,11 @@
 
 # Basé sur : https://gis.stackexchange.com/questions/350148/qcombobox-multiple-selection-pyqt5
 
-# Version: 21-10-26.0
+# Version: 21-10-26.1
+    # Suppression de print
+    # Auto lunch self.updateLang() when self.setIcons() is used
+    # resizeEvent patched
+    # ajout des tooltip dans addItems et addItem
 
 # Old :
     # Mise à jour du texte du lineEdit lors d'un changement d'état d'une case à cochée
@@ -76,6 +80,8 @@ class QCheckComboBox(QComboBox):
             size.setHeight(20)
             return size
 
+
+    #========================================================================
     def __init__(self, Parent=None, *args, **kwargs):
         # Ne pas utiliser super().__init__(*args, **kwargs) car QComboBox ne connaît pas mes variables
         super().__init__()
@@ -172,7 +178,7 @@ class QCheckComboBox(QComboBox):
         # Si le titre est passé lors de la création de la classe
         if "Title" in kwargs:
             # L'icône est facultative
-            self.setTitle(kwargs["Title"], self.iconCreation(kwargs.get("TitleIcon")))
+            self.setTitle(kwargs["Title"], self.iconChecker(kwargs.get("TitleIcon")))
 
         # Si des items sont passées lors de la création de la classe
         if "Items" in kwargs:
@@ -219,11 +225,12 @@ class QCheckComboBox(QComboBox):
                 Icon = kwargs.get(FunctionArgs[IconName])
 
                 if Icon:
-                    self.MenuIcons[ArgumentsOK[IconName]] = self.iconCreation(Icon)
+                    self.MenuIcons[ArgumentsOK[IconName]] = self.iconChecker(Icon)
+                    self.updateLang()
 
 
     #========================================================================
-    def iconCreation(self, Icon):
+    def iconChecker(self, Icon):
         """Fonction renvoyant une QIcon depuis une QIcon ou un texte."""
         if Icon is None:
             return QIcon()
@@ -359,8 +366,10 @@ class QCheckComboBox(QComboBox):
     #========================================================================
     def resizeEvent(self, Event):
         # Recompute text to elide as needed
-        self.updateText()
         super().resizeEvent(Event)
+
+        # La mise  à jour doit se faire après le resize
+        self.updateText()
 
 
     #========================================================================
@@ -576,38 +585,42 @@ class QCheckComboBox(QComboBox):
 
 
     #========================================================================
-    def addItem(self, text, data=None, state=None, icon=None, default=True):
+    def addItem(self, Text, Data=None, State=None, Icon=None, ToolTip=None, Default=True):
         """Fonction de création de l'item."""
         # Création de l'item de base avec son texte et ses flags
-        item = QStandardItem()
-        item.setEditable(False)
-        item.setText(text)
-        item.setData(Qt.Unchecked, Qt.CheckStateRole)
+        Item = QStandardItem()
+        Item.setEditable(False)
+        Item.setText(Text)
+        Item.setData(Qt.Unchecked, Qt.CheckStateRole)
 
         if self.TristateMode:
-            item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable | Qt.ItemIsUserTristate)
+            Item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable | Qt.ItemIsUserTristate)
 
         else:
-            item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
+            Item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
 
         # Utilisation de la data indiquée ou du texte
-        if data is None:
-            data = text
+        if Data is None:
+            Data = Text
 
-        item.setData(data, Qt.UserRole)
+        Item.setData(Data, Qt.UserRole)
 
-        if icon is not None and not icon.isNull():
-            item.setIcon(icon)
+        # Utilisation de la data indiquée ou du texte
+        if ToolTip is not None:
+            Item.setToolTip(ToolTip)
+
+        if Icon is not None and not Icon.isNull():
+            Item.setIcon(Icon)
 
         # Si l'état de la case à cocher est précisée
-        if state is not None:
-            item.setCheckState(state)
+        if State is not None:
+            Item.setCheckState(State)
 
         # Ajout de l'item
-        self.model().appendRow(item)
+        self.model().appendRow(Item)
 
         # Met à jour les valeurs par défaut, en utilisant le dictionnaire comme arguments
-        if self.DefaultValuesSave and default:
+        if self.DefaultValuesSave and Default:
             self.setDefaultValues(**self.DefaultValuesSave)
 
 
@@ -617,30 +630,38 @@ class QCheckComboBox(QComboBox):
         Les items sont de type : {text, data, state, icon}"""
         # Traite les dictionnaires un à un
         for Item in Items:
+            # Remplace les clés par des clés.lower()
+            ItemCase = {}
+            for Key, Value in Item.items():
+                ItemCase[Key.lower()] = Value
+
             # Si ni data ni texte, on le saute
-            if "data" not in Item.keys() and "text" not in Item.keys():
+            if "data" not in ItemCase.keys() and "text" not in ItemCase.keys():
                 continue
 
             # Si une donnée est manquante, on met une valeur de base
-            if "text" not in Item.keys():
-                Item["text"] = Item["data"]
+            if "text" not in ItemCase.keys():
+                ItemCase["text"] = ItemCase["data"]
 
-            if "data" not in Item.keys():
-                Item["data"] = None
+            if "data" not in ItemCase.keys():
+                ItemCase["data"] = None
 
-            if "state" not in Item.keys():
-                Item["state"] = None
+            if "state" not in ItemCase.keys():
+                ItemCase["state"] = None
 
-            if "icon" not in Item.keys():
-                Item["icon"] = None
+            if "icon" not in ItemCase.keys():
+                ItemCase["icon"] = None
+
+            if "tooltip" not in ItemCase.keys():
+                ItemCase["tooltip"] = None
 
             if Item != Items[-1]:
-                Item["default"] = False
+                ItemCase["default"] = False
             else:
-                Item["default"] = True
+                ItemCase["default"] = True
 
             # Création de la ligne
-            self.addItem(Item["text"], Item["data"], Item["state"], Item["icon"], Item["default"])
+            self.addItem(ItemCase["text"], ItemCase["data"], ItemCase["state"], ItemCase["icon"], ItemCase["tooltip"], ItemCase["default"])
 
 
     #========================================================================
@@ -779,7 +800,7 @@ class QCheckComboBox(QComboBox):
             self.DefaultValuesSave = {
                 "State": State,
                 "Values": Values,
-                "MatchFlag": MatchFlag
+                "CaseSensitive": CaseSensitive
                 }
             return
 
@@ -825,7 +846,6 @@ class QCheckComboBox(QComboBox):
 
         # Déblocage de l'action
         if self.DefaultValues[Qt.Checked] or self.DefaultValues[Qt.PartiallyChecked]:
-            print("ici", self.DefaultValues)
             self.updateLang()
 
 
@@ -835,13 +855,12 @@ class QCheckComboBox(QComboBox):
         if self.DefaultValues[Qt.Checked] or self.DefaultValues[Qt.PartiallyChecked]:
             # Décoche tout
             self.setStateAll(Qt.Unchecked)
-            print("putain :", self.DefaultValues)
+
             # Coche les différentes cases
             for State, Items in self.DefaultValues.items():
                 Indexes = []
 
                 for Item in Items:
-                    print(State, Item.text())
                     if Item:
                         Indexes.append(Item.index().row())
 
